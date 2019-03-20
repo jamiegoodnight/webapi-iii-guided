@@ -1,5 +1,5 @@
-const knex = require('knex');
-const config = require('../knexfile.js');
+const knex = require("knex");
+const config = require("../knexfile.js");
 const db = knex(config.development);
 
 module.exports = {
@@ -10,11 +10,11 @@ module.exports = {
   update,
   findHubMessages,
   findMessageById,
-  addMessage,
+  addMessage
 };
 
 function find(query) {
-  let { page = 1, limit = 5, sortby = 'id', sortdir = 'asc' } = query;
+  let { page = 1, limit = 5, sortby = "id", sortdir = "asc" } = query;
   // limit = Math.min(limit, 10);
   const offset = limit * (page - 1);
 
@@ -28,7 +28,7 @@ function find(query) {
   //   },
   // };
 
-  let rows = db('hubs')
+  let rows = db("hubs")
     .orderBy(sortby, sortdir)
     .limit(limit)
     .offset(offset);
@@ -37,44 +37,53 @@ function find(query) {
 }
 
 function findById(id) {
-  return db('hubs')
+  return db("hubs")
     .where({ id })
     .first();
 }
 
 async function add(hub) {
-  const [id] = await db('hubs').insert(hub);
+  const [id] = await db("hubs").insert(hub);
 
   return findById(id);
 }
 
+//  ^^^^
+// function add(hub) {
+//   db('hubs')
+//   .insert(hub)
+//   .then(([id]) => {
+//     return findById(id)
+//   })
+// }
+
 function remove(id) {
-  return db('hubs')
+  return db("hubs")
     .where({ id })
     .del();
 }
 
 function update(id, changes) {
-  return db('hubs')
+  return db("hubs")
     .where({ id })
-    .update(changes, '*');
+    .update(changes, "*");
 }
 
 function findHubMessages(hubId) {
-  return db('messages as m')
-    .join('hubs as h', 'm.hub_id', 'h.id')
-    .select('m.id', 'm.text', 'm.sender', 'h.id as hubId', 'h.name as hub')
+  return db("messages as m")
+    .join("hubs as h", "m.hub_id", "h.id")
+    .select("m.id", "m.text", "m.sender", "h.id as hubId", "h.name as hub")
     .where({ hub_id: hubId });
 }
 
 function findMessageById(id) {
-  return db('messages')
+  return db("messages")
     .where({ id })
     .first();
 }
 
 async function addMessage(message) {
-  const [id] = await db('messages').insert(message);
+  const [id] = await db("messages").insert(message);
 
   return findMessageById(id);
 }
